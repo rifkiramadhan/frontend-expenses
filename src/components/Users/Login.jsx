@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { loginAPI } from '../../services/users/userServices';
 import AlertMessage from '../Alert/AlertMessage';
-import { loginActions } from '../../redux/slice/authSlice';
+import { loginAction } from '../../redux/slice/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 //! Validations
@@ -46,7 +46,7 @@ const LoginForm = () => {
       mutateAsync(values)
         .then(data => {
           //! dispatch
-          dispatch(loginActions(data));
+          dispatch(loginAction(data));
           //! Save the user into localStorage
           localStorage.setItem('userInfo', JSON.stringify(data));
         })

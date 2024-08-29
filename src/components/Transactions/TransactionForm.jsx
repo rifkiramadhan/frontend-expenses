@@ -62,7 +62,7 @@ const TransactionForm = () => {
     onSubmit: values => {
       mutateAsync(values)
         .then(data => {
-          console.log(data);
+          navigate('/dashboard');
         })
         .catch(e => console.log(e));
     },

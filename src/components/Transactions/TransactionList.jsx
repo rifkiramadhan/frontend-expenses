@@ -3,9 +3,34 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { listTransactionsAPI } from '../../services/transactions/transactionServices';
+import { listCategoryAPI } from '../../services/category/categoryServices';
+import AlertMessage from '../Alert/AlertMessage';
 
 const TransactionList = () => {
+  //! Filtering State
+  const [filters, setFilters] = useState({
+    startDate: '',
+    endDate: '',
+    type: '',
+    category: '',
+  });
+
+  //! Handle Filter Change
+  const handleFilterChange = e => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
   //! Fetching
+  const {
+    data: categoriesData,
+    isLoading: categoryLoading,
+    error: categoryErr,
+  } = useQuery({
+    queryFn: listCategoryAPI,
+    queryKey: ['list-categories', filters],
+  });
+
   const {
     data: transactionsData,
     isError,
@@ -14,17 +39,16 @@ const TransactionList = () => {
     error,
     refetch,
   } = useQuery({
-    queryFn: listTransactionsAPI,
-    queryKey: ['list-transactions'],
+    queryFn: () => listTransactionsAPI(filters),
+    queryKey: ['list-transactions', filters],
   });
-  console.log(transactionsData);
 
   if (isLoading) {
-    return <p>Loading transactions...</p>;
+    return <AlertMessage type='loading' message='Loading' />;
   }
 
   if (isError) {
-    return <p>Error loading transactions: {error.message}</p>;
+    return <AlertMessage type='error' message={error.response.data.message} />;
   }
 
   return (
@@ -34,10 +58,14 @@ const TransactionList = () => {
         <input
           type='date'
           name='startDate'
+          value={filters.startDate}
+          onChange={handleFilterChange}
           className='p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
         />
         {/* End Date */}
         <input
+          value={filters.endDate}
+          onChange={handleFilterChange}
           type='date'
           name='endDate'
           className='p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50'
@@ -45,6 +73,8 @@ const TransactionList = () => {
         {/* Type */}
         <div className='relative'>
           <select
+            value={filters.type}
+            onChange={handleFilterChange}
             name='type'
             className='w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 appearance-none'
           >
@@ -57,9 +87,21 @@ const TransactionList = () => {
         {/* Category */}
         <div className='relative'>
           <select
+            value={filters.category}
+            onChange={handleFilterChange}
             name='category'
             className='w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 appearance-none'
-          ></select>
+          >
+            <option value='All'>All Categories</option>
+            <option value='Uncategorized'>Uncategorized</option>
+            {categoriesData?.map(category => {
+              return (
+                <option key={category._id} value={category?.name}>
+                  {category?.name}
+                </option>
+              );
+            })}
+          </select>
           <ChevronDownIcon className='w-5 h-5 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500' />
         </div>
       </div>
@@ -78,7 +120,6 @@ const TransactionList = () => {
                 <div>
                   <span className='font-medium text-gray-600'>
                     {new Date(transaction.date).toLocaleDateString()}
-                    {console.log(transaction)}
                   </span>
                   <span
                     className={`ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -96,7 +137,6 @@ const TransactionList = () => {
                   </span>
                   <span className='text-sm text-gray-600 italic ml-2'>
                     {transaction.description}
-                    {/* {console.log(transaction)} */}
                   </span>
                 </div>
                 <div className='flex space-x-3'>

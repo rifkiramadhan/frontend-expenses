@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { SiAuthy } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
-import { logoutActions } from '../../redux/slice/authSlice';
+import { logoutAction } from '../../redux/slice/authSlice';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -17,7 +17,7 @@ export default function PrivateNavbar() {
 
   //! Logout Handler
   const logoutHandler = () => {
-    dispatch(logoutActions());
+    dispatch(logoutAction());
     //! Remove the user from storage
     localStorage.removeItem('userInfo');
   };
@@ -27,8 +27,8 @@ export default function PrivateNavbar() {
       {({ open }) => (
         <>
           <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-            <div className='flex h-16 justify-start items-center'>
-              <div className='flex justify-center flex-row w-full'>
+            <div className='flex h-16 justify-between items-center'>
+              <div className='flex'>
                 <div className='-ml-2 mr-2 flex items-left md:hidden'>
                   {/* Mobile menu button */}
                   <Disclosure.Button className='relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'>
@@ -50,7 +50,7 @@ export default function PrivateNavbar() {
                     to='/'
                     className='inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900'
                   >
-                    MasyncTracker
+                    ShopTrek
                   </Link>
                 </div>
                 <div className='hidden md:ml-6 md:flex md:space-x-8'>
@@ -157,7 +157,7 @@ export default function PrivateNavbar() {
                   as='button'
                   className='block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6'
                 >
-                  MasyncTracker
+                  ShopTrek
                 </Disclosure.Button>
               </Link>
               <Link to='/add-transaction'>
